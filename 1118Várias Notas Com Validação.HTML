@@ -1,0 +1,19 @@
+<script>
+//&& nota2 < 0 && nota2 > 10
+//&& nota2 >= 0 && nota2 <= 10
+while(nota === 2){    
+    var nota = parseInt(prompt(''))
+    nota2 = nota
+    divisao = (nota+nota2)/2
+    if(nota > 10 && nota < 0){
+        console.log('nota invalida')
+    }
+    if(nota <= 10 && nota >= 0){
+        console.log('media = '+divisao)
+        console.log('novo calculo (1-sim 2-nao)')
+    }
+    if(nota == 1){
+        console.log('media = '+divisao)
+    }
+}
+</script>

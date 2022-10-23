@@ -1,0 +1,15 @@
+<script>
+   i = 0
+   med = 0
+   while(i<2){
+       nota = parseFloat(prompt(''))
+       if(nota>=0 && nota<=10){
+           i++
+           med = med + nota
+       }if (nota<0 && nota > 10){
+           console.log('nota invalida')
+       }
+    } 
+    med = (med)/2
+    console.log('media = ' + med.toFixed(2))
+</script>

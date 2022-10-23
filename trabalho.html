@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trabalho</title>
+    <style>
+      h3,
+      h4 {
+        display: inline;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Matemática para Computação</h2>
+    <h3>Trabalho da AV3</h3>
+    <br />
+    <br />
+    <div id="regras">
+      <h3>REGRAS</h3>
+      <br />
+      <h4>1. Utilize apenas os operadores descritos abaixo.</h4>
+      <br />
+      <h4>2. Considere:</h4>
+      <br />
+      <h4>operador de negação: ~</h4>
+      <br />
+      <h4>operador de conjunção: ^</h4>
+      <br />
+      <h4>operador de disjunção: v</h4>
+      <br />
+      <h4>operador condicional: -</h4>
+      <br />
+      <h4>operador bicondicional: =</h4>
+      <br />
+      <h4>
+        3. Apenas fórmulas bem formadas serão aprovadas pelo Analisador
+        Sintático.
+      </h4>
+      <br />
+      <h4>Condições das Fórmulas Bem Formadas:</h4>
+      <br />
+      <h4>. Qualquer símbolo proposicional é uma fórmula</h4>
+      <br />
+      <h4>
+        . Se a e b são fórmulas então (a Ù b ), (a Ú b ), ¬ a , (a ® b ), (a « b
+        ) também o são
+      </h4>
+      <br />
+      <h4>. Nada mais é fórmula bem formulada</h4>
+      <br />
+      <h4>5. Não utilize espaços.</h4>
+    </div>
+    <hr />
+    <input
+      id="textinput"
+      name="textinput"
+      value=""
+      type="text"
+      size="70"
+      style="margin-bottom: 10px"
+    />
+    <button id="botaoEnviar" onclick="enviar()">INICIAR ANÁLISE</button>
+    <br />
+    <div id="results">
+      <h4 id="result"></h4>
+      <br />
+      <h4 id="result2"></h4>
+      <br />
+    </div>
+    <button
+      id="botaoContinuar"
+      style="display: none; margin-top: 10px"
+      onclick="continuar()"
+    >
+      CONTINUAR
+    </button>
+    <div id="inputsValoresVerdade" style="display: none">
+      <input id="inputVar1" type="text" size="5" value="" />
+      <select id="selector1" type="text">
+        <option value="V"></option>
+        <option value="V">V</option>
+        <option value="F">F</option>
+      </select>
+      <br />
+      <input id="inputVar2" type="text" size="5" value="" />
+      <select id="selector2" type="text">
+        <option value="V"></option>
+        <option value="V">V</option>
+        <option value="F">F</option>
+      </select>
+      <br />
+      <input id="inputVar3" type="text" size="5" value="" />
+      <select id="selector3" type="text">
+        <option value="V"></option>
+        <option value="V">V</option>
+        <option value="F">F</option>
+      </select>
+      <br />
+      <input id="inputVar4" type="text" size="5" value="" />
+      <select id="selector4" type="text">
+        <option value="nulo"></option>
+        <option value="V">V</option>
+        <option value="F">F</option>
+      </select>
+      <br />
+      <button
+        onclick="selecaoOK()"
+        id="botaoSelecaoOK"
+        style="margin-top: 10px"
+      >
+        PROVADOR TAUTOLÓGICO
+      </button>
+    </div>
+    <div id="finals" style="display: block"></div>
+    <script>
+      /////////////////////// Geral /////////////////////////
+
+      const dic = [
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'I',
+        'J',
+        'K',
+        'L',
+        'M',
+        'N',
+        'O',
+        'P',
+        'Q',
+        'R',
+        'S',
+        'T',
+        'U',
+        'W',
+        'X',
+        'Y',
+        'Z',
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'j',
+        'k',
+        'l',
+        'm',
+        'n',
+        'o',
+        'p',
+        'q',
+        'r',
+        's',
+        't',
+        'u',
+        'x',
+        'y',
+        'z',
+        '~',
+        '^',
+        'v',
+        '-',
+        '=',
+        '(',
+        ')'
+      ]
+      const letras = [
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'I',
+        'J',
+        'K',
+        'L',
+        'M',
+        'N',
+        'O',
+        'P',
+        'Q',
+        'R',
+        'S',
+        'T',
+        'U',
+        'V',
+        'W',
+        'X',
+        'Y',
+        'Z',
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'j',
+        'k',
+        'l',
+        'm',
+        'n',
+        'o',
+        'p',
+        'q',
+        'r',
+        's',
+        't',
+        'u',
+        'x',
+        'y',
+        'z'
+      ]
+      const operadores = ['~', '^', 'v', '-', '=']
+      const parenteses = ['(', ')']
+
+      const operadoresSemNegacao = ['^', 'v', '-', '=']
+
+      const letrasVF = ['V', 'F']
+
+      let listaLetras = []
+      let listaLetrasFilt = []
+      let listaFinal = []
+
+      var input1 = document.getElementById('textinput')
+      var botaoEnviar = document.getElementById('botaoEnviar')
+      var botaoContinuar = document.getElementById('botaoContinuar')
+      var results = document.getElementById('results')
+      var inputsValoresVerdade = document.getElementById('inputsValoresVerdade')
+      var inputVar1 = document.getElementById('inputVar1')
+      var inputVar2 = document.getElementById('inputVar2')
+      var inputVar3 = document.getElementById('inputVar3')
+      var inputVar4 = document.getElementById('inputVar4')
+      var selector1 = document.getElementById('selector1')
+      var selector2 = document.getElementById('selector2')
+      var selector3 = document.getElementById('selector3')
+      var selector4 = document.getElementById('selector4')
+      var finals = document.getElementById('finals')
+      // var suspense = document.getElementById('suspense')
+      // var suspense2 = document.getElementById('suspense2')
+      // var textoFinal = document.getElementById('textoFinal')
+
+      function enviar() {
+        var entrada = input1.value
+        listaEntrada = entrada.toString().split('')
+
+        for (var i = 0; i < listaEntrada.length; i++) {
+          if (letras.includes(listaEntrada[i])) {
+            listaLetras.push(listaEntrada[i])
+          }
+        }
+
+        listaLetrasFilt = [...new Set(listaLetras)]
+
+        var aux = 0
+        var aux2 = 0
+        var contagemAcertos = 0
+        var contagemParentesesA = 0
+        var contagemParentesesB = 0
+
+        /////////////////ANALISADOR LÉXICO////////////////////
+
+        for (var i = 0; i < listaEntrada.length; i++) {
+          if (dic.includes(listaEntrada[i]) == true) {
+            contagemAcertos++
+          }
+        }
+
+        if (contagemAcertos != listaEntrada.length) {
+          document.getElementById('result').innerHTML =
+            'Análise léxica: NÃO APROVADO. </br> Recarregue a página e digite uma nova entrada de acordo com os critérios solicitados.'
+        }
+        if (contagemAcertos == listaEntrada.length) {
+          document.getElementById('result').innerText =
+            'Análise léxica: APROVADO.'
+          aux = 1
+        }
+
+        /////////////////ANALISADOR SINTÁTICO////////////////////
+
+        contagemAcertos = 0
+        i = 0
+
+        if (listaEntrada[0] == '~' && listaEntrada[1] == '(') {
+          contagemAcertos++
+        }
+
+        for (var i = 0; i < listaEntrada.length; i++) {
+          if (
+            letras.includes(listaEntrada[i]) &&
+            operadoresSemNegacao.includes(listaEntrada[i + 1])
+          ) {
+            contagemAcertos++
+          }
+          if (letras.includes(listaEntrada[i]) && listaEntrada[i + 1] == ')') {
+            contagemAcertos++
+          }
+          if (
+            operadores.includes(listaEntrada[i]) &&
+            letras.includes(listaEntrada[i + 1])
+          ) {
+            contagemAcertos++
+          }
+          if (
+            operadoresSemNegacao.includes(listaEntrada[i]) &&
+            listaEntrada[i + 1] == '('
+          ) {
+            contagemAcertos++
+          }
+          if (listaEntrada[i] == '(' && letras.includes(listaEntrada[i + 1])) {
+            contagemAcertos++
+          }
+          if (listaEntrada[i] == '(' && listaEntrada[i + 1] == '~') {
+            contagemAcertos++
+          }
+          if (listaEntrada[i] == '(' && listaEntrada[i + 1] == '(') {
+            contagemAcertos++
+          }
+          if (
+            listaEntrada[i] == ')' &&
+            operadoresSemNegacao.includes(listaEntrada[i + 1])
+          ) {
+            contagemAcertos++
+          }
+          if (listaEntrada[i] == ')' && listaEntrada[i + 1] == ')') {
+            contagemAcertos++
+          }
+          if (
+            operadoresSemNegacao.includes(listaEntrada[i]) &&
+            listaEntrada[i + 1] == '~' &&
+            listaEntrada[i + 2] == '('
+          ) {
+            contagemAcertos = contagemAcertos + 2
+          }
+          if (
+            operadoresSemNegacao.includes(listaEntrada[i]) &&
+            listaEntrada[i + 1] == '~' &&
+            letras.includes(listaEntrada[i + 2])
+          ) {
+            contagemAcertos = contagemAcertos + 2
+          }
+          if (
+            i == listaEntrada[listaEntrada.length - 1] &&
+            letras.includes(listaEntrada[i])
+          ) {
+            contagemAcertos++
+          }
+          if (
+            i == listaEntrada[listaEntrada.length - 1] &&
+            listaEntrada[i] == ')'
+          ) {
+            contagemAcertos++
+          }
+          if (listaEntrada[i] == '(') {
+            contagemParentesesA++
+          }
+          if (listaEntrada[i] == ')') {
+            contagemParentesesB++
+          }
+        }
+        contagemAcertos++
+
+        console.log(listaEntrada.length)
+        console.log(contagemAcertos)
+
+        if (
+          contagemAcertos != listaEntrada.length ||
+          contagemParentesesA != contagemParentesesB
+        ) {
+          document.getElementById('result2').innerHTML =
+            'Análise sintática: NÃO APROVADO. </br> Recarregue a página e digite uma nova entrada de acordo com os critérios solicitados.'
+          if (contagemParentesesA != contagemParentesesB) {
+            console.log('error: parênteses.')
+          }
+        }
+        if (
+          contagemAcertos == listaEntrada.length &&
+          contagemParentesesA == contagemParentesesB
+        ) {
+          document.getElementById('result2').innerText =
+            'Análise sintática: APROVADO.'
+          aux2 = 1
+        }
+
+        ///////////////////////AJUSTE DE LAYOUT//////////////////////
+
+        if (aux == 1 && aux2 == 1) {
+          botaoContinuar.style.display = 'block'
+        }
+      }
+
+      function continuar() {
+        input1.style.display = 'none'
+        botaoEnviar.style.display = 'none'
+        results.style.display = 'none'
+        botaoContinuar.style.display = 'none'
+        inputsValoresVerdade.style.display = 'block'
+
+        inputVar1.value = listaLetrasFilt[0]
+        inputVar2.value = listaLetrasFilt[1]
+        inputVar3.value = listaLetrasFilt[2]
+        inputVar4.value = listaLetrasFilt[3]
+      }
+      ////////////////ATRIBUIDOR DE VALOR-VERDADE//////////////////
+
+      function selecaoOK() {
+        for (var i = 0; i < listaEntrada.length; i++) {
+          if (listaEntrada[i] == listaLetrasFilt[0]) {
+            listaEntrada[i] = selector1.value
+          }
+          if (listaEntrada[i] == listaLetrasFilt[1]) {
+            listaEntrada[i] = selector2.value
+          }
+          if (listaEntrada[i] == listaLetrasFilt[2]) {
+            listaEntrada[i] = selector3.value
+          }
+          if (listaEntrada[i] == listaLetrasFilt[3]) {
+            listaEntrada[i] = selector4.value
+          }
+        }
+
+        inputsValoresVerdade.style.display = 'none'
+
+        /////////////////PROVADOR DE TAUTOLOGIA////////////////////
+
+        var listaZ = listaEntrada.join(' ')
+
+        listaFinal = listaEntrada
+
+        function simplificacao() {
+          for (var i = 0; i < listaFinal.length; i++) {
+            if (
+              listaFinal[i] == '(' &&
+              letrasVF.includes(listaFinal[i + 1]) &&
+              listaFinal[i + 2] == ')'
+            ) {
+              listaFinal[i + 2] = listaFinal[i + 1]
+              listaFinal.splice(i, 2)
+            }
+          }
+        }
+
+        var I = 0
+
+        while (listaFinal.length != 1) {
+          for (var i = 0; i < listaFinal.length; i++) {
+            if (listaFinal[i] == '~' && listaFinal[i + 1] == 'V') {
+              listaFinal[i + 1] = 'F'
+              listaFinal.splice(i, 1)
+            }
+            if (listaFinal[i] == '~' && listaFinal[i + 1] == 'F') {
+              listaFinal[i + 1] = 'V'
+              listaFinal.splice(i, 1)
+            }
+          }
+
+          console.log(listaFinal)
+
+          simplificacao()
+
+          for (var i = 0; i < listaFinal.length; i++) {
+            if (
+              listaFinal[i] == 'F' &&
+              listaFinal[i + 1] == 'v' &&
+              listaFinal[i + 2] == 'F'
+            ) {
+              listaFinal[i + 2] = 'F'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'F' &&
+              listaFinal[i + 1] == 'v' &&
+              listaFinal[i + 2] == 'V'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'V' &&
+              listaFinal[i + 1] == 'v' &&
+              listaFinal[i + 2] == 'F'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'V' &&
+              listaFinal[i + 1] == 'v' &&
+              listaFinal[i + 2] == 'V'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+          }
+
+          console.log(listaFinal)
+
+          simplificacao()
+
+          for (var i = 0; i < listaFinal.length; i++) {
+            if (
+              listaFinal[i] == 'F' &&
+              listaFinal[i + 1] == '^' &&
+              listaFinal[i + 2] == 'F'
+            ) {
+              listaFinal[i + 2] = 'F'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'F' &&
+              listaFinal[i + 1] == '^' &&
+              listaFinal[i + 2] == 'V'
+            ) {
+              listaFinal[i + 2] = 'F'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'V' &&
+              listaFinal[i + 1] == '^' &&
+              listaFinal[i + 2] == 'F'
+            ) {
+              listaFinal[i + 2] = 'F'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'V' &&
+              listaFinal[i + 1] == '^' &&
+              listaFinal[i + 2] == 'V'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+          }
+
+          console.log(listaFinal)
+
+          simplificacao()
+
+          for (var i = 0; i < listaFinal.length; i++) {
+            if (
+              listaFinal[i] == 'F' &&
+              listaFinal[i + 1] == '-' &&
+              listaFinal[i + 2] == 'F'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'F' &&
+              listaFinal[i + 1] == '-' &&
+              listaFinal[i + 2] == 'V'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'V' &&
+              listaFinal[i + 1] == '-' &&
+              listaFinal[i + 2] == 'F'
+            ) {
+              listaFinal[i + 2] = 'F'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'V' &&
+              listaFinal[i + 1] == '-' &&
+              listaFinal[i + 2] == 'V'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+          }
+
+          console.log(listaFinal)
+
+          simplificacao()
+
+          for (var i = 0; i < listaFinal.length; i++) {
+            if (
+              listaFinal[i] == 'F' &&
+              listaFinal[i + 1] == '=' &&
+              listaFinal[i + 2] == 'F'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'F' &&
+              listaFinal[i + 1] == '=' &&
+              listaFinal[i + 2] == 'V'
+            ) {
+              listaFinal[i + 2] = 'F'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'V' &&
+              listaFinal[i + 1] == '=' &&
+              listaFinal[i + 2] == 'F'
+            ) {
+              listaFinal[i + 2] = 'F'
+              listaFinal.splice(i, 2)
+            }
+            if (
+              listaFinal[i] == 'V' &&
+              listaFinal[i + 1] == '=' &&
+              listaFinal[i + 2] == 'V'
+            ) {
+              listaFinal[i + 2] = 'V'
+              listaFinal.splice(i, 2)
+            }
+          }
+
+          console.log(listaFinal)
+
+          simplificacao()
+
+          I++
+        }
+
+        document.getElementById('finals').innerHTML +=
+          '<h4> O valor verdade de </h4> ' +
+          listaZ +
+          '<h4> é: </h4>' +
+          ' ' +
+          listaEntrada.join(' ') +
+          '. <br> <h4> Para mais detalhes, clique com o botão esquerdo do mouse na tela, selecione Inspecionar e acesse o console do DevTools.</h4>'
+      }
+    </script>
+  </body>
+</html>

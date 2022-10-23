@@ -1,0 +1,14 @@
+<script>
+    var x = parseFloat(lines.shift());
+    var p = 0
+    var y = 0
+    for(i = 0 ; i < 6 ; i++){
+        if(x>0){
+            p++
+            y += x
+        }
+        x = parseFloat(lines.shift());
+    }
+    const media = y/p
+    console.log(`${p} valores positivos\n${media.toFixed(1)}`);
+</script>
